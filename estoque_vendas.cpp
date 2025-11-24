@@ -1,279 +1,220 @@
-#include <iostream>   // entrada/saída padrão
-#include <string>     // manipulação de strings
-#include <vector>     // uso de vetores dinâmicos
-#include <cmath>      // funções matemáticas (pow, sqrt)
-#include <iomanip>    // formatação de saída (setprecision, fixed)
-#include <limits>     // limites de tipos e tratamento de entrada
-#include <cstdlib>    // funções de utilidade (rand)
+#include <iostream> // entrada/saída
+#include <vector> // vetor dinâmico para produtos
+#include <string> // strings
+#include <cmath> // funções matemáticas (sqrt, pow)
+#include <cstdlib> // rand, srand
+#include <ctime> // time para srand
+#include <iomanip> // manipulação de formato (setprecision, fixed)
 
-using namespace std; // uso do namespace std
+using namespace std; // evita std:: em todo lugar
 
-/* ================================================================
-    DECLARAÇÃO DE FUNÇÕES 
-   ================================================================ */
+// Estrutura de produto
+struct Produto { // define tipo Produto
+    string nome; // nome do produto
+    double preco; // preço unitário
+    int estoque; // quantidade em estoque
+};
 
-/* ===================== PARTE DO ANDERSON ===================== 
-    Anderson: Responsável pela documentação, modularização,
-    boas práticas e clareza estrutural das funções.
-*/
-bool realizarLogin(string senhaCorreta); // protótipo: função de login
-double calcularPrecoVenda(double custo, double margem, double fator); // protótipo: calcula preço
+// Função para cadastrar produto
+void cadastrarProduto(vector<Produto> &produtos) { // recebe referência ao vetor
+    Produto p; // cria produto temporário
+    cin.ignore(); // descarta '\n' pendente no buffer
+    cout << "Nome do produto: "; // pede nome
+    getline(cin, p.nome); // lê linha inteira para nome
 
-/* ================================================================
-    FUNÇÃO PRINCIPAL - MENU DO SISTEMA
-   ================================================================ */
-int main() { // início da função principal
+    cout << "Preco: "; // pede preço
+    cin >> p.preco; // lê preço
 
-    /* ===================== PARTE DO EMERSON =====================
-        Emerson: Responsável pelos vetores que armazenam os produtos.
-        Esses vetores são a base de todo o controle de estoque.
-    */
-    vector<string> nomesProdutos; // vetor de nomes de produtos
-    vector<double> precosCusto; // vetor de preços de custo
-    vector<int> quantidadesEstoque; // vetor de quantidades em estoque
+    cout << "Estoque: "; // pede estoque
+    cin >> p.estoque; // lê estoque
 
-    string senhaGerente = "estoque789"; // senha fixa do gerente
-    int opcao; // opção do menu
+    produtos.push_back(p); // adiciona ao vetor
+    cout << "Produto cadastrado com sucesso!\n"; // confirmação
+}
 
-    cout << fixed << setprecision(2); // configura saída com 2 casas decimais
+// Função de cálculo de preço com potência
+double calcularPrecoVenda(double custo, double margem, double fator) { // calcula preço final
+    double multiplicador = 1 + margem / 100.0; // converte margem percentual
+    return custo * pow(multiplicador, fator); // aplica potência e retorna
+}
 
-    /* ===================== PARTE DO DIEGO =====================
-        Diego: Desenvolvimento do menu principal e navegação entre as opções.
-    */
-    do { // laço do menu principal
-        cout << "\n\n=== SISTEMA DE CONTROLE DE ESTOQUE E VENDAS ===\n"; // cabeçalho
+// Relatório de estoque
+void relatorioEstoque(const vector<Produto> &produtos) { // recebe vetor const
+    cout << "\n--- Relatorio de Estoque ---\n"; // cabeçalho
+
+    for (size_t i = 0; i < produtos.size(); i++) { // itera índices
+        string status = (produtos[i].estoque < 10 ? "ESTOQUE BAIXO" : "OK"); // status condicional
+
+        cout << i << " | " << produtos[i].nome // imprime índice e nome
+            << " | " << fixed << setprecision(2) << produtos[i].preco // imprime preço formatado
+            << " | " << produtos[i].estoque // imprime estoque
+            << " | " << status << "\n"; // imprime status e quebra de linha
+    }
+
+    cout << "Pressione Enter..."; // pausa
+    cin.ignore(); // consome '\n'
+    cin.get(); // espera Enter
+}
+
+// 🔥 Nova simulação REAL de vendas
+void simularVendasMensais(vector<Produto> &produtos) { // simula vendas diminuindo estoque
+    if (produtos.empty()) { // verifica lista vazia
+        cout << "Nenhum produto cadastrado.\n"; // mensagem
+        return; // retorna sem fazer nada
+    }
+
+    cout << "\n--- Simulacao de Vendas (Usando Estoque Real) ---\n"; // cabeçalho
+
+    double totalAnual = 0; // acumula faturamento anual
+
+    for (int mes = 1; mes <= 12; mes++) { // loop 12 meses
+        cout << "\n=== Mes " << mes << " ===\n"; // mostra mês
+        double totalMes = 0; // acumula faturamento do mês
+
+        for (auto &p : produtos) { // percorre produtos por referência
+
+            if (p.estoque == 0) { // sem estoque
+                cout << "- " << p.nome << ": sem estoque → vendeu 0 unidades → R$ 0.00\n"; // informa
+                continue; // passa para o próximo produto
+            }
+
+            int qtdVendida = rand() % (p.estoque + 1); // quantidade vendida aleatória até estoque
+            double faturamento = qtdVendida * p.preco; // calcula faturamento
+
+            p.estoque -= qtdVendida; // reduz o estoque
+
+            cout << "- " << p.nome // imprime resumo da venda
+                << ": vendeu " << qtdVendida
+                << " unidades → R$ " << fixed << setprecision(2)
+                << faturamento << "\n";
+
+            totalMes += faturamento; // soma ao total do mês
+        }
+
+        cout << "Total do mes: R$ " << fixed << setprecision(2) << totalMes << "\n"; // total mensal
+        totalAnual += totalMes; // soma ao anual
+    }
+
+    cout << "\nTotal anual: R$ " << totalAnual << "\n"; // imprime total anual
+    cout << "Media mensal: R$ " << totalAnual / 12.0 << "\n"; // imprime média mensal
+
+    cout << "Pressione Enter..."; // pausa final
+    cin.ignore(); // consome '\n'
+    cin.get(); // espera Enter
+}
+
+// Área do gerente: valida senha usando WHILE
+void areaGerente() { // bloco protegido por senha
+    const string senhaCorreta = "1234"; // senha fixa
+    string tentativa; // armazena tentativa do usuário
+
+    cout << "\n--- Area do Gerente ---\n"; // cabeçalho
+    cout << "Digite a senha: "; // pede senha
+    cin >> tentativa; // lê tentativa
+
+    while (tentativa != senhaCorreta) { // enquanto incorreta
+        cout << "Senha incorreta. Tente novamente: "; // pede novamente
+        cin >> tentativa; // lê nova tentativa
+    }
+
+    cout << "Acesso liberado!\n"; // acesso concedido
+}
+
+// Análise: raiz e divisão
+void analiseDesempenho() { // realiza duas operações simples
+    double valor; // valor para raiz
+
+    cout << "Digite um numero para calcular a raiz: "; // pede número
+    cin >> valor; // lê valor
+
+    cout << "Raiz quadrada: " << sqrt(valor) << "\n"; // mostra raiz
+
+    int a, b; // inteiros para divisão
+    cout << "Digite dois numeros para verificar divisao inteira: "; // pede dois números
+    cin >> a >> b; // lê a e b
+
+    if (b != 0 && a % b == 0) // verifica divisibilidade e evita divisão por zero
+        cout << a << " é divisível por " << b << "\n"; // caso divisível
+    else
+        cout << a << " NÃO é divisível por " << b << "\n"; // caso não divisível
+}
+
+// =============================
+// =========== MAIN ============
+// =============================
+int main() { // ponto de entrada
+    srand(time(0)); // inicializa gerador de números aleatórios
+
+    vector<Produto> produtos = { // lista inicial de produtos
+        {"Livro Senhor dos Anéis", 40.00, 50}, // produto 1
+        {"Celular", 500.00, 10}, // produto 2
+        {"Macbook Air", 5000.00, 5} // produto 3
+    };
+
+    int opcao; // armazena opção do menu
+
+    do { // loop do menu
+        cout << "\n=== SISTEMA DE CONTROLE DE ESTOQUE E VENDAS ===\n"; // título
         cout << "1. Cadastrar Produto\n"; // opção 1
         cout << "2. Calcular Preco de Venda (com Potencia)\n"; // opção 2
         cout << "3. Relatorio de Estoque (IF/ELSE)\n"; // opção 3
         cout << "4. Simular Vendas Mensais (FOR)\n"; // opção 4
         cout << "5. Area do Gerente (WHILE e Senha)\n"; // opção 5
         cout << "6. Analise de Desempenho (Raiz e Divisao)\n"; // opção 6
-        cout << "0. Sair\n"; // opção sair
-        cout << "Escolha uma opcao: "; // solicita opção
-        cin >> opcao; // lê opção
+        cout << "0. Sair\n"; // opção 0
+        cout << "Escolha uma opcao: "; // prompt
 
-        /* ===================== PARTE DO ANDERSON =====================
-            Anderson: Tratamento de erros, validação de entradas
-        */
-        if (cin.fail()) { // se leitura falhar
-            cout << "Entrada invalida. Use numeros.\n"; // mensagem de erro
+        if (!(cin >> opcao)) { // valida entrada numérica
             cin.clear(); // limpa estado de erro
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // descarta entrada inválida
-            opcao = -1; // força repetição do menu
-            continue; // volta ao início do loop
+            cin.ignore(1000, '\n'); // descarta entrada inválida
+            cout << "Entrada invalida. Use numeros.\n"; // aviso
+            continue; // volta ao menu
         }
 
+        switch (opcao) { // trata opções
+            case 1:
+                cadastrarProduto(produtos); // chama cadastro
+                break;
 
-        switch (opcao) { // switch das opções do menu
-
-            /* ===================== PARTE DO EMERSON =====================
-                Emerson: Cadastro e gerenciamento dos produtos no estoque.
-            */
-            case 1: { // cadastrar produto
-                cout << "\n--- Cadastro de Produto ---\n"; // título cadastro
-
-                string nome; // nome temporário
-                double preco; // preço temporário
-                int qtd; // quantidade temporária
-
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); // limpa buffer antes do getline
-
-                cout << "Nome do produto: "; // pede nome
-                getline(cin, nome); // lê linha inteira com o nome
-
-                cout << "Preco de custo: "; // pede preço
-                cin >> preco; // lê preço
-
-                cout << "Quantidade: "; // pede quantidade
-                cin >> qtd; // lê quantidade
-
-                nomesProdutos.push_back(nome); // adiciona nome ao vetor
-                precosCusto.push_back(preco); // adiciona preço ao vetor
-                quantidadesEstoque.push_back(qtd); // adiciona quantidade ao vetor
-
-                cout << "\nProduto cadastrado com sucesso!\n"; // confirma cadastro
-                break; // sai do case
-            }
-
-            /* ===================== PARTE DO EVANDRO =====================
-                Evandro: Cálculo matemático usando potência.
-                Responsável pela opção 2.
-            */
-            case 2: { // calcular preço de venda
-                cout << "\n--- Calculo de Preco de Venda ---\n"; // título cálculo
-
-                if (nomesProdutos.empty()) { // verifica se há produtos
-                    cout << "Nenhum produto cadastrado.\n"; // avisa vazio
-                    break; // volta ao menu
-                }
-
-                for (int i = 0; i < nomesProdutos.size(); ++i) // lista índices e nomes
-                    cout << i << ": " << nomesProdutos[i] << "\n"; // imprime índice: nome
-
-                int idx; // índice escolhido
-                cout << "Escolha o indice: "; // pede índice
-                cin >> idx; // lê índice
-
-                if (idx < 0 || idx >= nomesProdutos.size()) { // valida índice
-                    cout << "Indice invalido.\n"; // avisa inválido
-                    break; // volta ao menu
-                }
-
-                double margem, fator; // recebe margem e fator
+            case 2: {
+                double custo, margem, fator; // parâmetros para cálculo
+                cout << "Custo: "; // pede custo
+                cin >> custo; // lê custo
                 cout << "Margem (%): "; // pede margem
                 cin >> margem; // lê margem
-
-                cout << "Fator de potencia: "; // pede fator
+                cout << "Fator: "; // pede fator
                 cin >> fator; // lê fator
 
-                double precoVenda = calcularPrecoVenda(precosCusto[idx], margem, fator); // calcula preço
-
-                cout << "Preco calculado: R$ " << precoVenda << "\n"; // mostra resultado
-                break; // sai do case
+                cout << "Preco de venda: R$ "
+                    << calcularPrecoVenda(custo, margem, fator) << "\n"; // mostra resultado
+                break;
             }
 
-            /* ===================== PARTE DO EMERSON =====================
-                Emerson: Relatório de estoque com lógica IF/ELSE.
-            */
-            case 3: { // relatório de estoque
-                cout << "\n--- Relatorio de Estoque ---\n"; // título relatório
+            case 3:
+                relatorioEstoque(produtos); // mostra relatório
+                break;
 
-                if (nomesProdutos.empty()) { // se sem produtos
-                    cout << "Nenhum produto cadastrado.\n"; // avisa
-                    break; // volta ao menu
-                }
+            case 4:
+                simularVendasMensais(produtos); // simula vendas
+                break;
 
-                for (int i = 0; i < nomesProdutos.size(); ++i) { // percorre produtos
-                    cout << i << " | " // imprime índice
-                        << nomesProdutos[i] << " | " // imprime nome
-                        << precosCusto[i] << " | " // imprime preço de custo
-                        << quantidadesEstoque[i] << " | "; // imprime quantidade
+            case 5:
+                areaGerente(); // área do gerente
+                break;
 
-                    if (quantidadesEstoque[i] == 0) // se zero
-                        cout << "EM FALTA\n"; // marca em falta
-                    else if (quantidadesEstoque[i] < 10) // estoque baixo
-                        cout << "ESTOQUE BAIXO\n"; // marca baixo
-                    else
-                        cout << "OK\n"; // marca ok
-                }
-                break; // sai do case
-            }
+            case 6:
+                analiseDesempenho(); // executa análise
+                break;
 
-            /* ===================== PARTE DO PAULO =====================
-                Paulo: Simulação de vendas e controle usando FOR.
-                Responsável pela parte lógica da repetição.
-            */
-            case 4: { // simulação de vendas mensais
-                cout << "\n--- Simulacao de Vendas ---\n"; // título simulação
+            case 0:
+                cout << "Saindo...\n"; // saída
+                break;
 
-                double total = 0; // acumulador total anual
-
-                for (int mes = 1; mes <= 12; ++mes) { // para cada mês
-                    double venda = 500 * mes + (rand() % 1000); // calcula venda aleatória
-                    total += venda; // acumula total
-                    cout << "Mes " << mes << ": R$ " << venda << "\n"; // imprime mês e venda
-                }
-
-                cout << "Total anual: R$ " << total << "\n"; // imprime total anual
-                cout << "Media mensal: R$ " << total / 12 << "\n"; // imprime média mensal
-                break; // sai do case
-            }
-
-            /* ===================== PARTE DO DIEGO =====================
-                Diego: Área do gerente com controle de senha usando WHILE.
-            */
-            case 5: { // área do gerente
-                cout << "\n--- Area do Gerente ---\n"; // título área gerente
-
-                bool acesso = realizarLogin(senhaGerente); // tenta login
-
-                if (acesso)
-                    cout << "Acesso liberado!\n"; // sucesso
-                else
-                    cout << "Acesso bloqueado.\n"; // falha
-
-                break; // sai do case
-            }
-
-            /* ===================== PARTE DO EVANDRO =====================
-                Evandro: Raiz quadrada e divisão com resto zero.
-            */
-            case 6: { // análise de desempenho
-                cout << "\n--- Analise de Desempenho ---\n"; // título análise
-
-                if (nomesProdutos.empty()) { // sem produtos
-                    cout << "Nenhum produto cadastrado.\n"; // avisa
-                    break; // volta ao menu
-                }
-
-                int total = 0; // soma de todos os itens
-                for (int qtd : quantidadesEstoque) // soma quantidades
-                    total += qtd; // acumula
-
-                cout << "Total de itens: " << total << "\n"; // imprime total
-                cout << "Indice (raiz): " << sqrt(total) << "\n"; // imprime raiz quadrada
-
-                int lote; // tamanho do lote
-                cout << "Tamanho do lote: "; // pede lote
-                cin >> lote; // lê lote
-
-                cout << "Produtos divisiveis por " << lote << ":\n"; // título divisíveis
-                for (int i = 0; i < nomesProdutos.size(); i++) { // percorre produtos
-                    if (quantidadesEstoque[i] % lote == 0) // se divisível
-                        cout << "- " << nomesProdutos[i] << "\n"; // imprime nome
-                }
-
-                break; // sai do case
-            }
-
-            case 0: // opção sair
-                cout << "\nSaindo do sistema...\n"; // mensagem de saída
-                break; // sai do switch
-
-            default: // opção inválida
-                cout << "Opcao invalida. Tente novamente.\n"; // mensagem inválida
+            default:
+                cout << "Opcao invalida!\n"; // opção inválida
         }
 
-        if (opcao != 0) { // se não está saindo
-            cout << "Pressione Enter..."; // pede enter para continuar
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // limpa buffer
-            cin.get(); // espera Enter
-        }
+    } while (opcao != 0); // repete até escolher sair
 
-    } while (opcao != 0); // repete até escolher 0
-
-    return 0; // encerra programa
-}
-
-/* ================================================================
-    IMPLEMENTAÇÃO DAS FUNÇÕES
-   ================================================================ */
-
-/* ===================== PARTE DO DIEGO =====================
-    Login com limite de tentativas usando WHILE.
-*/
-bool realizarLogin(string senhaCorreta) { // implementação do login
-    string senha; // senha digitada
-    int tentativas = 0; // contador de tentativas
-
-    while (tentativas < 3) { // até 3 tentativas
-        cout << "Digite a senha: "; // solicita senha
-        cin.ignore(numeric_limits<streamsize>::max(), '\n'); // limpa buffer antes de getline
-        getline(cin, senha); // lê senha completa
-
-        if (senha == senhaCorreta) // compara senhas
-            return true; // retorna sucesso
-
-        cout << "Senha incorreta.\n"; // avisa incorreto
-        tentativas++; // incrementa tentativas
-    }
-    return false; // retorna falha após tentativas
-}
-
-/* ===================== PARTE DO EVANDRO =====================
-    Função matemática com uso de pow() (potência).
-*/
-double calcularPrecoVenda(double custo, double margem, double fator) { // calcula preço venda
-    double multiplicador = 1 + margem / 100.0; // converte % para multiplicador
-    return custo * pow(multiplicador, fator); // aplica potência e retorna
+    return 0; // finaliza programa
 }
