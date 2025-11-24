@@ -1,117 +1,116 @@
-#include <iostream>  // Para entrada e saída (cout, cin)
-#include <string>    // Para usar o tipo 'string'
-#include <vector>    // Para usar 'vector' (armazenamento dinâmico)
-#include <cmath>     // Para funções matemáticas (pow, sqrt)
-#include <iomanip>   // Para formatar a saída (setprecision, fixed)
-#include <limits>    // Para limpar o buffer de entrada (numeric_limits)
-#include <cstdlib>   // Para system("cls") ou system("clear")
+#include <iostream>  // Permite usar cout e cin (entrada e saída de dados)
+#include <string>    // Permite usar o tipo string
+#include <vector>    // Permite usar vetores dinâmicos
+#include <cmath>     // Funções matemáticas: pow(), sqrt()
+#include <iomanip>   // Formatação de saída: setprecision(), fixed
+#include <limits>    // Para limpar o buffer quando há erro no cin
+#include <cstdlib>   // system("cls") ou system("clear")
 
 using namespace std;
 
-// --- Declaração das Funções (Implementação no final) ---
+/* ================================================================
+    DECLARAÇÃO DE FUNÇÕES
+    (As funções são criadas aqui e implementadas no final do arquivo)
+   ================================================================ */
 
 /**
- * @brief Solicita uma senha ao usuário e valida contra a senha correta.
- * Limita o número de tentativas (Requisito 4).
- * @param senhaCorreta A senha que deve ser digitada.
- * @return true se o login for bem-sucedido, false caso contrário.
+ * Pede uma senha ao usuário e valida.
+ * Usa WHILE e limita 3 tentativas.
  */
 bool realizarLogin(string senhaCorreta);
 
 /**
- * @brief Calcula o preço de venda com base no custo, margem e um fator.
- * Utiliza potência (Requisito 2).
- * @param custo O preço de custo do produto.
- * @param margem A margem de lucro desejada (em %).
- * @param fator O expoente 'n' para o cálculo (ex: 1 para margem simples).
- * @return O preço de venda calculado.
+ * Calcula preço de venda usando potência.
+ * Ex.: custo * (1 + margem/100)^fator
  */
 double calcularPrecoVenda(double custo, double margem, double fator);
 
-// --- Função Principal ---
 
+/* ================================================================
+    FUNÇÃO PRINCIPAL - MENU DO SISTEMA
+   ================================================================ */
 int main() {
-    // Vetores para armazenar os dados dos produtos (Requisito 8)
+    // Vetores usados para armazenar todos os produtos cadastrados
     vector<string> nomesProdutos;
     vector<double> precosCusto;
     vector<int> quantidadesEstoque;
 
-    string senhaGerente = "estoque789"; // Senha para área do gerente
+    string senhaGerente = "estoque789"; // Senha da área restrita
     int opcao;
 
-    // Configura a saída de dados para mostrar 2 casas decimais para dinheiro
+    // Configura saída para sempre mostrar valores com 2 casas decimais
     cout << fixed << setprecision(2);
 
-    // Loop DO-WHILE para o menu principal (Requisito 6)
+    // Estrutura DO-WHILE que mantém o menu funcionando até o usuário sair
     do {
-        // Limpa a tela (opcional, mas melhora a usabilidade)
-        // system("cls"); // Para Windows
-        // system("clear"); // Para Linux/Mac
+        // Exibição do menu
         cout << "\n\n=== SISTEMA DE CONTROLE DE ESTOQUE E VENDAS ===\n";
-        cout << "================================================\n";
         cout << "1. Cadastrar Produto\n";
         cout << "2. Calcular Preco de Venda (com Potencia)\n";
         cout << "3. Relatorio de Estoque (com IF/ELSE)\n";
-        cout << "4. Simular Vendas Mensais (com FOR simples)\n";
+        cout << "4. Simular Vendas Mensais (com FOR)\n";
         cout << "5. Area do Gerente (com WHILE e Senha)\n";
-        cout << "6. Analise de Desempenho (com Raiz e Divisao)\n";
+        cout << "6. Analise de Desempenho (Raiz e Divisao)\n";
         cout << "0. Sair\n";
-        cout << "================================================\n";
         cout << "Escolha uma opcao: ";
         cin >> opcao;
 
-        // Validação básica de entrada
+        // Tratamento de erros caso o usuário digite algo inválido
         if (cin.fail()) {
-            cout << "Entrada invalida. Por favor, digite um numero.\n";
-            cin.clear(); // Limpa o estado de erro
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Descarta a entrada ruim
-            opcao = -1; // Força o loop a continuar
+            cout << "Entrada invalida. Digite um numero.\n";
+            cin.clear();
+            cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            opcao = -1;
             continue;
         }
 
-        // Menu principal com SWITCH CASE (Requisito 1)
+        /* SWITCH CASE — Executa a opção escolhida */
         switch (opcao) {
+
+            /* ---------------------- OPÇÃO 1 ---------------------- */
             case 1: {
-                // --- Cadastro de Produtos ---
-                cout << "\n--- 1. Cadastro de Produto ---\n";
+                cout << "\n--- Cadastro de Produto ---\n";
+
                 string nome;
                 double preco;
                 int qtd;
 
-                // Limpa o buffer antes de ler o nome (que pode ter espaços)
-                cin.ignore(numeric_limits<streamsize>::max(), '\n'); 
+                // Limpa o buffer para permitir nome com espaços
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
                 cout << "Nome do produto: ";
-                getline(cin, nome); // Permite nomes com espaço
+                getline(cin, nome);
 
-                cout << "Preco de custo (R$): ";
+                cout << "Preco de custo: ";
                 cin >> preco;
 
-                cout << "Quantidade em estoque: ";
+                cout << "Quantidade: ";
                 cin >> qtd;
 
-                // Adiciona aos vetores
+                // Salva os dados nos vetores
                 nomesProdutos.push_back(nome);
                 precosCusto.push_back(preco);
                 quantidadesEstoque.push_back(qtd);
 
-                cout << "\nProduto '" << nome << "' cadastrado com sucesso!\n";
+                cout << "\nProduto cadastrado com sucesso!\n";
                 break;
             }
+
+            /* ---------------------- OPÇÃO 2 ---------------------- */
             case 2: {
-                // --- Cálculo de Preço de Venda (POTÊNCIA) ---
-                cout << "\n--- 2. Calculo de Preco de Venda ---\n";
+                cout << "\n--- Calculo de Preco de Venda ---\n";
+
                 if (nomesProdutos.empty()) {
-                    cout << "Nenhum produto cadastrado para calcular o preco.\n";
+                    cout << "Nenhum produto cadastrado.\n";
                     break;
                 }
 
-                cout << "Selecione o produto pelo indice:\n";
-                for (int i = 0; i < nomesProdutos.size(); ++i) {
+                // Mostra todos os produtos com seus índices
+                for (int i = 0; i < nomesProdutos.size(); ++i)
                     cout << i << ": " << nomesProdutos[i] << "\n";
-                }
-                cout << "Indice: ";
+
                 int idx;
+                cout << "Escolha o indice: ";
                 cin >> idx;
 
                 if (idx < 0 || idx >= nomesProdutos.size()) {
@@ -119,205 +118,158 @@ int main() {
                     break;
                 }
 
-                double margem;
-                double fator;
-                cout << "Digite a margem de lucro (ex: 30 para 30%): ";
+                double margem, fator;
+                cout << "Margem (%): ";
                 cin >> margem;
-                cout << "Digite o fator 'n' (ex: 1 para simples): ";
+
+                cout << "Fator de potencia: ";
                 cin >> fator;
 
-                // Chama a função (Requisito 9)
+                // Chamada da função
                 double precoVenda = calcularPrecoVenda(precosCusto[idx], margem, fator);
 
-                cout << "\nPreco de Custo: R$ " << precosCusto[idx] << "\n";
-                cout << "Margem: " << margem << "%, Fator: " << fator << "\n";
-                cout << "Preco de Venda Calculado: R$ " << precoVenda << "\n";
+                cout << "Preco calculado: R$ " << precoVenda << "\n";
                 break;
             }
+
+            /* ---------------------- OPÇÃO 3 ---------------------- */
             case 3: {
-                // --- Relatório de Estoque (IF/ELSE) ---
-                cout << "\n--- 3. Relatorio de Estoque ---\n";
+                cout << "\n--- Relatorio de Estoque ---\n";
+
                 if (nomesProdutos.empty()) {
-                    cout << "Estoque vazio. Cadastre produtos primeiro.\n";
+                    cout << "Nenhum produto cadastrado.\n";
                     break;
                 }
 
-                cout << "----------------------------------------------------------\n";
-                cout << "Indice | Produto            | Custo (R$) | Qtd. | Status\n";
-                cout << "----------------------------------------------------------\n";
-
-                // Laço FOR para iterar sobre o vetor (item 8)
+                // Exibe tabela de produtos
                 for (int i = 0; i < nomesProdutos.size(); ++i) {
-                    cout << left; // Alinha texto à esquerda
-                    cout << setw(7) << i << " | "
-                        << setw(18) << nomesProdutos[i].substr(0, 18) << " | "
-                        << setw(10) << precosCusto[i] << " | "
-                        << setw(4) << quantidadesEstoque[i] << " | ";
+                    cout << i << " | "
+                        << nomesProdutos[i] << " | "
+                        << precosCusto[i] << " | "
+                        << quantidadesEstoque[i] << " | ";
 
-                    // Uso de IF, ELSE IF, ELSE (Requisito 5)
-                    if (quantidadesEstoque[i] == 0) {
-                        cout << "EM FALTA";
-                    } else if (quantidadesEstoque[i] < 10) {
-                        cout << "ESTOQUE BAIXO";
-                    } else {
-                        cout << "OK";
-                    }
-                    cout << "\n";
+                    // IF/ELSE determinando o status
+                    if (quantidadesEstoque[i] == 0)
+                        cout << "EM FALTA\n";
+                    else if (quantidadesEstoque[i] < 10)
+                        cout << "ESTOQUE BAIXO\n";
+                    else
+                        cout << "OK\n";
                 }
-                cout << "----------------------------------------------------------\n";
                 break;
             }
+
+            /* ---------------------- OPÇÃO 4 ---------------------- */
             case 4: {
-                // --- Simulação de Vendas (FOR simples) ---
-                cout << "\n--- 4. Simulacao de Vendas (12 meses) ---\n";
-                double totalVendas = 0;
-                double vendaMensal;
+                cout << "\n--- Simulacao de Vendas ---\n";
 
-                // Laço FOR simples (sem iterar vetor) (Requisito 7)
+                double total = 0;
+
+                // FOR repetindo 12 vezes (12 meses)
                 for (int mes = 1; mes <= 12; ++mes) {
-                    // Simulação simples: venda aumenta a cada mês
-                    vendaMensal = 500.0 * mes + (rand() % 1000); // Valor base + aleatório
-                    totalVendas += vendaMensal;
-                    cout << "Mes " << setw(2) << mes << ": R$ " << vendaMensal << "\n";
+                    double venda = 500 * mes + (rand() % 1000);
+                    total += venda;
+                    cout << "Mes " << mes << ": R$ " << venda << "\n";
                 }
 
-                double mediaMensal = totalVendas / 12.0;
-                cout << "-----------------------------------\n";
-                cout << "Total de Vendas no Ano: R$ " << totalVendas << "\n";
-                cout << "Media Mensal de Vendas: R$ " << mediaMensal << "\n";
+                cout << "Total anual: R$ " << total << "\n";
+                cout << "Media mensal: R$ " << total / 12 << "\n";
                 break;
             }
+
+            /* ---------------------- OPÇÃO 5 ---------------------- */
             case 5: {
-                // --- Área do Gerente (SENHA com WHILE) ---
-                cout << "\n--- 5. Area do Gerente ---\n";
-                
-                // Chama a função (Requisito 9)
-                bool acessoConcedido = realizarLogin(senhaGerente);
+                cout << "\n--- Area do Gerente ---\n";
 
-                if (acessoConcedido) {
-                    cout << "\n*** ACESSO CONCEDIDO ***\n";
-                    cout << "Area restrita para acoes administrativas.\n";
-                    // (Aqui poderiam entrar opções exclusivas do gerente)
-                } else {
-                    cout << "\n*** ACESSO BLOQUEADO ***\n";
-                    cout << "Numero maximo de tentativas atingido.\n";
-                }
+                // Chama a função que controla a senha
+                bool acesso = realizarLogin(senhaGerente);
+
+                if (acesso)
+                    cout << "Acesso liberado!\n";
+                else
+                    cout << "Acesso bloqueado.\n";
+
                 break;
             }
+
+            /* ---------------------- OPÇÃO 6 ---------------------- */
             case 6: {
-                // --- Análise de Desempenho (RAIZ e DIVISÃO) ---
-                cout << "\n--- 6. Analise de Desempenho ---\n";
+                cout << "\n--- Analise de Desempenho ---\n";
+
                 if (nomesProdutos.empty()) {
-                    cout << "Nenhum produto cadastrado para analisar.\n";
+                    cout << "Nenhum produto cadastrado.\n";
                     break;
                 }
 
-                // --- Cálculo com RAIZ (Requisito 2) ---
-                int totalItensEstoque = 0;
-                for (int qtd : quantidadesEstoque) {
-                    totalItensEstoque += qtd;
-                }
-                
-                // Cálculo de exemplo: Raiz quadrada do total de itens
-                if (totalItensEstoque > 0) {
-                    double indiceDesempenho = sqrt(static_cast<double>(totalItensEstoque));
-                    cout << "Total de itens no estoque: " << totalItensEstoque << "\n";
-                    cout << "Indice de Desempenho (Raiz do Total): " << indiceDesempenho << "\n";
-                } else {
-                    cout << "Estoque zerado, indice de desempenho: 0\n";
-                }
+                // Soma total de itens
+                int total = 0;
+                for (int qtd : quantidadesEstoque)
+                    total += qtd;
 
+                // Cálculo com raiz quadrada
+                cout << "Total de itens: " << total << "\n";
+                cout << "Indice (raiz): " << sqrt(total) << "\n";
 
-                // --- Verificação de DIVISÃO com resto zero (Requisito 3) ---
-                cout << "\n--- Verificacao de Lotes ---\n";
-                int tamanhoLote;
-                cout << "Digite o tamanho do lote economico para verificacao: ";
-                cin >> tamanhoLote;
+                // Teste de divisão com resto zero
+                int lote;
+                cout << "Tamanho do lote: ";
+                cin >> lote;
 
-                if (tamanhoLote <= 0) {
-                    cout << "Tamanho do lote deve ser positivo.\n";
-                    break;
+                cout << "Produtos divisiveis por " << lote << ":\n";
+                for (int i = 0; i < nomesProdutos.size(); i++) {
+                    if (quantidadesEstoque[i] % lote == 0)
+                        cout << "- " << nomesProdutos[i] << "\n";
                 }
 
-                cout << "Produtos com estoque perfeitamente divisivel por " << tamanhoLote << ":\n";
-                bool encontrou = false;
-                for (int i = 0; i < nomesProdutos.size(); ++i) {
-                    // Verificação de divisão com resto zero
-                    if (quantidadesEstoque[i] > 0 && (quantidadesEstoque[i] % tamanhoLote == 0)) {
-                        cout << "- " << nomesProdutos[i] << " (Estoque: " << quantidadesEstoque[i] << ")\n";
-                        encontrou = true;
-                    }
-                }
-
-                if (!encontrou) {
-                    cout << "Nenhum produto encontrado com estoque divisivel por " << tamanhoLote << ".\n";
-                }
                 break;
             }
+
             case 0:
-                cout << "\nSaindo do sistema. Ate logo!\n";
+                cout << "\nSaindo do sistema...\n";
                 break;
+
             default:
-                cout << "\nOpcao invalida. Tente novamente.\n";
-                break;
+                cout << "Opcao invalida. Tente novamente.\n";
         }
 
-        // Pausa rápida para o usuário ler a saída antes do menu recarregar
+        // Pausa antes de retornar ao menu
         if (opcao != 0) {
-            cout << "\nPressione Enter para continuar...";
-            cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Limpa buffer caso haja algo
-            cin.get(); // Espera o Enter
-        }
-
-    } while (opcao != 0); // Fim do DO-WHILE
-
-    return 0; // Fim do programa
-}
-
-// --- Implementação das Funções (Requisito 9) ---
-
-/**
- * Requisito 4: Controle de SENHA com WHILE (máximo 3 tentativas)
- */
-bool realizarLogin(string senhaCorreta) {
-    string senhaDigitada;
-    int tentativas = 0;
-    const int MAX_TENTATIVAS = 3;
-
-    // Loop WHILE para controlar as tentativas
-    while (tentativas < MAX_TENTATIVAS) {
-        cout << "Digite a senha do gerente (Tentativa " << (tentativas + 1) << " de " << MAX_TENTATIVAS << "): ";
-        
-        // Limpa o buffer antes de ler a senha
-        if(tentativas > 0 || cin.peek() == '\n') {
+            cout << "Pressione Enter...";
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            cin.get();
         }
-        getline(cin, senhaDigitada);
 
-        if (senhaDigitada == senhaCorreta) {
-            return true; // Sucesso
-        } else {
-            cout << "Senha incorreta.\n";
-            tentativas++; // Incrementa a tentativa
-        }
-    }
+    } while (opcao != 0);
 
-    // Se saiu do loop, atingiu o máximo de tentativas
-    return false; // Falha
+    return 0;
 }
 
-/**
- * Requisito 2: Cálculos usando POTÊNCIA
- */
+
+/* ================================================================
+    IMPLEMENTAÇÃO DAS FUNÇÕES
+   ================================================================ */
+
+/* Controle de login com no máximo 3 tentativas */
+bool realizarLogin(string senhaCorreta) {
+    string senha;
+    int tentativas = 0;
+
+    while (tentativas < 3) {
+        cout << "Digite a senha: ";
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        getline(cin, senha);
+
+        if (senha == senhaCorreta)
+            return true;
+
+        cout << "Senha incorreta.\n";
+        tentativas++;
+    }
+    return false;
+}
+
+/* Cálculo de preço usando potência matemática */
 double calcularPrecoVenda(double custo, double margem, double fator) {
-    if (custo < 0) custo = 0;
-    
-    // Calcula o multiplicador da margem (ex: 30% -> 1.30)
-    double multiplicador = 1.0 + (margem / 100.0);
-
-    // Usa pow() para aplicar o fator
-    // precoVenda = custo * (1 + margem/100)^fator
-    double precoVenda = custo * pow(multiplicador, fator);
-
-    return precoVenda;
+    double multiplicador = 1 + margem / 100.0;
+    return custo * pow(multiplicador, fator);
 }
