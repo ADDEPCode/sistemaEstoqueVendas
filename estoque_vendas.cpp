@@ -1,3 +1,11 @@
+/*
+    ANDERSON LUÍS PINHEIRO
+    DIEGO HENRIQUE CARLOS
+    EMERSON MILTON FERREIRA
+    EVANDRO GABRIEL CAMPOS DE AZEVEDO
+    PAULO EDUARDO COROLIN
+*/
+
 #include <iostream> // entrada/saída
 #include <vector> // vetor dinâmico para produtos
 #include <string> // strings
@@ -218,3 +226,4 @@ int main() { // ponto de entrada
 
     return 0; // finaliza programa
 }
+
